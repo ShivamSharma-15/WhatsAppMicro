@@ -3,7 +3,7 @@ require("dotenv").config();
 
 if (process.env.NODE_ENV === "production") {
   Sentry.init({
-    dsn: "https://c8feed891e60021dc17891555923e9b1@o4509507672932352.ingest.de.sentry.io/4509507676930128",
+    dsn: process.env.SENTRY_DSN,
     sendDefaultPii: true,
     environment: "production",
   });

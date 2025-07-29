@@ -4,8 +4,15 @@ const { logError } = require("../utils/errorHandler");
 
 async function waTemplateController(req, res) {
   try {
-    const { number, sender, templateName, language, components, access_token } =
-      req.body;
+    const {
+      number,
+      sender,
+      templateName,
+      language,
+      components,
+      access_token,
+      serviceId,
+    } = req.body;
 
     const answer = await waTemplate(
       number,
@@ -13,13 +20,14 @@ async function waTemplateController(req, res) {
       templateName,
       language,
       components,
-      access_token
+      access_token,
+      serviceId
     );
 
     res.json({ status: "success", data: answer });
   } catch (error) {
+    console.log(error);
     logError("waController", error);
-
     res.status(500).json({
       status: "error",
       message: "Internal Server Error",
@@ -29,14 +37,15 @@ async function waTemplateController(req, res) {
 
 async function waFreeFormController(req, res) {
   try {
-    const { number, sender, type, message, access_token } = req.body;
+    const { number, sender, type, message, access_token, serviceId } = req.body;
 
     const result = await waFreeForm(
       number,
       sender,
       type,
       message,
-      access_token
+      access_token,
+      serviceId
     );
 
     res.json({ status: "success", data: result });

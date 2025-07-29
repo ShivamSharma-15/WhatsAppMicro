@@ -1,11 +1,19 @@
 const axios = require("axios");
 const { logError } = require("../utils/errorHandler");
-const { heal } = require("../utils/heal");
+const { getUTCDateTime } = require("../utils/timeUtil");
+const { saveLogModel } = require("../model/logMessageModel");
 
 const MAX_RETRIES = 3;
-const RETRY_DELAY_MS = 1000;
+const RETRY_DELAY_MS = 5000;
 
-async function waFreeForm(number, sender, type, message, access_token) {
+async function waFreeForm(
+  number,
+  sender,
+  type,
+  message,
+  access_token,
+  serviceId
+) {
   const data = {
     messaging_product: "whatsapp",
     to: number,
@@ -39,18 +47,19 @@ async function waFreeForm(number, sender, type, message, access_token) {
 
     attempt++;
   }
-
-  if (response) {
-    heal(response.data);
+  if (response.status === 200) {
+    body = {
+      number,
+      sender,
+      type,
+      message,
+    };
+    const createdAt = getUTCDateTime();
+    const log = await saveLogModel(body, serviceId, createdAt);
+    return "OK";
   } else {
-    heal({
-      error: true,
-      message: lastError?.message,
-      data: lastError?.response?.data || null,
-    });
+    return "ERROR";
   }
-
-  return "OK";
 }
 
 module.exports = { waFreeForm };

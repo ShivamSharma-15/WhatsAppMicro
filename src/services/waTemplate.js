@@ -1,6 +1,8 @@
 const axios = require("axios");
 const { logError } = require("../utils/errorHandler");
-const { heal } = require("../utils/heal");
+const { getUTCDateTime } = require("../utils/timeUtil");
+const { saveLogModel } = require("../model/logMessageModel");
+
 const MAX_RETRIES = 3;
 const RETRY_DELAY_MS = 5000;
 
@@ -10,7 +12,8 @@ async function waTemplate(
   templateName,
   language,
   components,
-  access_token
+  access_token,
+  serviceId
 ) {
   const data = {
     messaging_product: "whatsapp",
@@ -54,18 +57,20 @@ async function waTemplate(
 
     attempt++;
   }
-
-  if (response) {
-    heal(response.data);
+  if (response.status === 200) {
+    body = {
+      number,
+      sender,
+      templateName,
+      language,
+      components,
+    };
+    const createdAt = getUTCDateTime();
+    const log = await saveLogModel(body, serviceId, createdAt);
+    return "OK";
   } else {
-    heal({
-      error: true,
-      message: lastError?.message,
-      data: lastError?.response?.data || null,
-    });
+    return "ERROR";
   }
-
-  return "OK";
 }
 
 module.exports = { waTemplate };
