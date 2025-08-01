@@ -8,7 +8,7 @@ app.use(express.json());
 const sendMessage = require("./routes/waRoute.js");
 app.use("/api/whatsapp/v1", sendMessage);
 Sentry.setupExpressErrorHandler(app);
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Server running on 0.0.0.0:${PORT}`);
 });

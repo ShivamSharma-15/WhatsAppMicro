@@ -4,8 +4,8 @@ const { logError } = require("../utils/errorHandler");
 async function saveLogModel(body, serviceId, createdAt) {
   try {
     const [result] = await pool.query(
-      "INSERT INTO logs (created_at, service_id, req.body) VALUES (?, ?, ?);",
-      [createdAt, serviceId, body]
+      "INSERT INTO logs (created_at, service_id, req_body) VALUES (?, ?, ?);",
+      [createdAt, serviceId, JSON.stringify(body)]
     );
 
     if (!result || !result.insertId) {
